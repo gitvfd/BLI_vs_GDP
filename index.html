@@ -19,9 +19,9 @@
     <style>
 
     body { color: #555; background: #DDE9EF;width: 500px; font: normal 13px "HelveticaNeueLT", Helvetica, Arial, sans-serif; margin: 0.5% 10% 0% 10%; }
-    header { margin: 0 0 20px 20px; border-bottom: 1px solid #6c6c6c; width: 400px; position: relative; }
-    h1 { font-size: 14px; font-weight: bold; text-shadow: #fff 0 1px 0; margin: 0 0 0 0; padding: 0; }
-    h2 { font-size: 12px; font-weight: normal; font-style: italic; text-shadow: #fff 0 1px 0; margin: 0 0 0 0; padding: 0; }
+    header { margin: 0 0 0px 0px; border-bottom: 1px solid #6c6c6c; width: 500px; position: relative; }
+    h1 { font-size: 18px; font-weight: bold; text-shadow: #fff 0 1px 0; margin: 0 0 0 0; padding: 0; }
+    h2 { font-size: 14px; font-weight: normal; font-style: italic; text-shadow: #fff 0 1px 0; margin: 0 0 0 0; padding: 0; }
     small { margin: 0 0 10px 130px; color: #555; font-size: 13px; font-style: italic; top: 0.6em; position: top;}
     a { color: #555; }
 
@@ -95,14 +95,12 @@
 </head>
 <body>
     <header>
-        <center>
         <h1>
           Well-Being and Wealth
         </h1>
          <h2>
-          OECD Better Life Index and GDP per person, 2014
+          OECD Better Life Index (from 0 to 11) and GDP per person in USD, 2014
         </h2>
-        </center>
     </header>
   </div>
   <br>
@@ -171,13 +169,13 @@
       chart.append("text")
         .attr("x",xScale(d3.max(data, function(d) { return parseFloat(d.gdpperCapita)}))-150)
         .attr("y",low+30)
-        .attr("fill","grey")
+        .attr("fill","black")
         .text("GDP per person in USD at PPPs");
 
       chart.append("text")
         .attr("x",xScale(d3.min(data, function(d) { return parseFloat(d.gdpperCapita); })-2000)-35)
         .attr("y",yScale(d3.max(data, function(d) { return parseFloat(d.BLI)}))-10)
-        .attr("fill","grey")
+        .attr("fill","black")
         .text("Better Life Index");
 
       
