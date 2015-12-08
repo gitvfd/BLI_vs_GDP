@@ -18,7 +18,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <style>
 
-    body { color: #555; background: #fff;width: 500px; font: normal 13px "HelveticaNeueLT", Helvetica, Arial, sans-serif; margin: 2em; }
+    body { color: #555; background: #DDE9EF;width: 500px; font: normal 13px "HelveticaNeueLT", Helvetica, Arial, sans-serif; margin: 0.5% 10% 0% 10%; }
     header { margin: 0 0 20px 20px; border-bottom: 1px solid #6c6c6c; width: 400px; position: relative; }
     h1 { font-size: 14px; font-weight: bold; text-shadow: #fff 0 1px 0; margin: 0 0 0 0; padding: 0; }
     h2 { font-size: 12px; font-weight: normal; font-style: italic; text-shadow: #fff 0 1px 0; margin: 0 0 0 0; padding: 0; }
@@ -66,17 +66,21 @@
       font-size: 12px;
       line-height: 13px;
     }
-    .axis path,
+    .axis path {
+      display:none;
+    }
+
+
     .axis line {
       fill: none;
-      stroke: black;
+      stroke: #fff;
       shape-rendering: crispEdges;
     }
-    
+
     .axis text {
       font-family: sans-serif;
       font-size: 11px;
-      fill: grey;
+      fill: black;
     }
     .popover {
       pointer-events: none;
@@ -105,7 +109,7 @@
   <div class="row">
     <div class="span1" id="chart"></div>
   </div>
-  <div class="source"><b>Source: </b><a href="http://www.oecdbetterlifeindex.org" target="_blank">OECD Better LIfe Index</a><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="http://data.oecd.org/gdp/gross-domestic-product-gdp.htm" target="_blank">OECD Data</a><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.economist.com/blogs/dailychart/2011/05/well-being_and_wealth" target="_blank">The Economist</a> </div>
+  <div class="source"><b>Source: </b><a href="http://www.oecdbetterlifeindex.org" target="_blank">OECD Better LIfe Index</a><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <a href="http://data.oecd.org/gdp/gross-domestic-product-gdp.htm" target="_blank">OECD Data</a><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.economist.com/blogs/dailychart/2011/05/well-being_and_wealth" target="_blank">The Economist</a> </div>
   <script>
     var margin = 50,
         width = 600,
@@ -117,13 +121,14 @@
                .attr("width", width)
                .attr("height", height);
 
-var low;
+    var low;
+    var left;
 
     d3.tsv("bli_vs_gdp.tsv", function(tsv) {
       data = tsv;
       //Create scale functions
       var xScale = d3.scale.linear()
-                 .domain([0, d3.max(data, function(d) { return parseFloat(d.gdpperCapita); })])
+                 .domain([d3.min(data, function(d) { return parseFloat(d.gdpperCapita); })-2000, d3.max(data, function(d) { return parseFloat(d.gdpperCapita); })])
                  .range([margin, width - margin * 2]);
 
       var yScale = d3.scale.linear()
@@ -132,20 +137,24 @@ var low;
       //Define X axis
       var xAxis = d3.svg.axis()
                 .scale(xScale)
-                .orient("bottom");
-                //.ticks(5)
+                .orient("bottom")
+                .ticks(4)
+                .tickSize(-height+100);
                 //.tickFormat(d3.format("0%"));
 
       //Define Y axis
       var yAxis = d3.svg.axis()
                 .scale(yScale)
-                .orient("left");
-                //.ticks(5)
+                .orient("left")
+                .ticks(4)
+                .tickSize(-width+100);
                 //.tickFormat(d3.format("0%"));
 
 
-      // define low to draw guiding line.
+      // define low and left to draw guiding line.
       low = yScale(d3.min(data, function(d) { return parseFloat(d.BLI); }));
+
+      left= xScale(d3.min(data, function(d) { return parseFloat(d.gdpperCapita); })-2000);
 
       //Create X axis
       chart.append("g")
@@ -162,11 +171,13 @@ var low;
       chart.append("text")
         .attr("x",xScale(d3.max(data, function(d) { return parseFloat(d.gdpperCapita)}))-150)
         .attr("y",low+30)
+        .attr("fill","grey")
         .text("GDP per person in USD at PPPs");
 
       chart.append("text")
-        .attr("x",xScale(0)-35)
+        .attr("x",xScale(d3.min(data, function(d) { return parseFloat(d.gdpperCapita); })-2000)-35)
         .attr("y",yScale(d3.max(data, function(d) { return parseFloat(d.BLI)}))-10)
+        .attr("fill","grey")
         .text("Better Life Index");
 
       
@@ -192,24 +203,24 @@ var low;
 
 
       //Create labels
-
-      chart.selectAll("text")
+      chart.selectAll()
          .data(data)
          .enter()
          .append("text")
-         .text(function(d) {
-              return d.ISO;
-         })
          .attr("x", function(d) {
-            return xScale(parseFloat(d.gdpperCapita)) + 8;
+          console.log(d.Country)
+            return xScale(d.gdpperCapita) + 5;
          })
          .attr("y", function(d) {
             
-            return yScale(parseFloat(d.BLI))+ 0;
+            return yScale(d.BLI) +0 ;
           
          })
+         .text(function(d) {
+              return d.ISO;
+         })
          .attr("font-family", "sans-serif")
-         .attr("font-size", "10px");
+         .attr("font-size", "8px");
  
 
       
@@ -309,7 +320,7 @@ function showTooltip (d, i) {
     .attr("class", "guide")
     .append("line")
       .attr("x1", +element.attr("cx"))
-      .attr("x2", 0)
+      .attr("x2", left)
       .attr("y1", element.attr("cy"))
       .attr("y2", element.attr("cy"))
       .style("stroke", element.style("fill"))
